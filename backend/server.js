@@ -1,33 +1,72 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
 const app = express();
+const upload = multer({ dest: 'public/uploads/' });
 
 app.use(cors());
 app.use(bodyParser.json());
 
+// Ensure uploads directory exists
+if (!fs.existsSync('public/uploads')) {
+  fs.mkdirSync('public/uploads');
+}
+
 let meals = {
-  Saturday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Sunday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Monday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Tuesday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Wednesday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Thursday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  Friday: { Breakfast: { name: 'Pancakes', picture: 'pancakes.jpg' }, Lunch: {}, Supper: {} },
-  // Define other days similarly...
+  Sunday: { Breakfast: { name: 'Pancakes', picture: '/uploads/pancakes.jpg' }, Lunch: {}, Supper: {} },
+  Monday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Tuesday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Wednesday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Thursday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Friday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Saturday: { Breakfast: {}, Lunch: {}, Supper: {} },
 };
 
 app.get('/api/meals', (req, res) => {
   res.json(meals);
 });
 
-app.post('/api/meals', (req, res) => {
-  const { day, mealType, meal } = req.body;
-  if (meals[day]) {
-    meals[day][mealType] = meal;
-    res.json({ message: 'Meal updated' });
+app.post('/api/meals', upload.single('picture'), (req, res) => {
+  const { day, mealType, name } = req.body;
+  if (req.file) {
+    const picturePath = `/uploads/${req.file.filename}`;
+    if (meals[day]) {
+      meals[day][mealType] = { name, picture: picturePath };
+      res.json({ message: 'Meal updated', picture: picturePath });
+    } else {
+      res.status(400).json({ message: 'Invalid day' });
+    }
   } else {
-    res.status(400).json({ message: 'Invalid day' });
+    res.status(400).json({ message: 'No file uploaded' });
+  }
+});
+
+app.put('/api/meals', upload.single('picture'), (req, res) => {
+  const { day, mealType, name } = req.body;
+  if (req.file) {
+    const picturePath = `/uploads/${req.file.filename}`;
+    if (meals[day]) {
+      meals[day][mealType] = { name, picture: picturePath };
+      res.json({ message: 'Meal updated', picture: picturePath });
+    } else {
+      res.status(400).json({ message: 'Invalid day' });
+    }
+  } else {
+    res.status(400).json({ message: 'No file uploaded' });
+  }
+});
+
+app.delete('/api/meals', (req, res) => {
+  const { day, mealType } = req.body;
+  if (meals[day] && meals[day][mealType]) {
+    meals[day][mealType] = {};
+    res.json({ message: 'Meal deleted' });
+  } else {
+    res.status(400).json({ message: 'Invalid day or meal type' });
   }
 });
 
