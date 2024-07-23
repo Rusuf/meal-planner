@@ -1,25 +1,26 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import MealTable from './MealTable';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [meals, setMeals] = useState({});
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/meals')
+      .then(response => {
+        console.log('Fetched meals:', response.data); // Debugging log
+        setMeals(response.data);
+      })
+      .catch(error => console.error('Error fetching meals:', error));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Weekly Meal Planner</h1>
+      {Object.keys(meals).length > 0 ? <MealTable meals={meals} /> : <p>Loading meals...</p>}
     </div>
   );
-}
+};
 
 export default App;
