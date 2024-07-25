@@ -12,49 +12,52 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Ensure the uploads directory exists
 if (!fs.existsSync('public/uploads')) {
   fs.mkdirSync('public/uploads');
 }
 
 let meals = {
-  Sunday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Monday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Tuesday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Wednesday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Thursday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Friday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
-  Saturday: { Breakfast: { name: '', picture: '' }, Lunch: {name:'', picture:''}, Supper: {name:'', picture:''} },
- 
-  // ... other days
+  Sunday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Monday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Tuesday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Wednesday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Thursday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Friday: { Breakfast: {}, Lunch: {}, Supper: {} },
+  Saturday: { Breakfast: {}, Lunch: {}, Supper: {} }
 };
 
-// Get all meals
 app.get('/api/meals', (req, res) => {
   res.json(meals);
 });
 
-// Add/update a meal
 app.post('/api/meals', upload.single('picture'), (req, res) => {
   const { day, mealType, name } = req.body;
+
   if (req.file) {
     const picturePath = `/uploads/${req.file.filename}`;
-    if (meals[day]) {
+    if (meals[day] && meals[day][mealType] !== undefined) {
       meals[day][mealType] = { name, picture: picturePath };
       res.json({ message: 'Meal updated', picture: picturePath });
     } else {
-      res.status(400).json({ message: 'Invalid day' });
+      res.status(400).json({ message: 'Invalid day or meal type' });
     }
   } else {
     res.status(400).json({ message: 'No file uploaded' });
   }
 });
 
-// Delete a meal
 app.delete('/api/meals', (req, res) => {
   const { day, mealType } = req.body;
-  if (meals[day] && meals[day][mealType]) {
-    meals[day][mealType] = {};
+
+  if (meals[day] && meals[day][mealType] !== undefined) {
+    const picturePath = meals[day][mealType].picture;
+    if (picturePath) {
+      const fullPath = path.join(__dirname, 'public', picturePath);
+      fs.unlink(fullPath, (err) => {
+        if (err) console.error('Error deleting file:', err);
+      });
+    }
+    meals[day][mealType] = {}; 
     res.json({ message: 'Meal deleted' });
   } else {
     res.status(400).json({ message: 'Invalid day or meal type' });

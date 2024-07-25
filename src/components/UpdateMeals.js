@@ -37,7 +37,7 @@ const UpdateMeals = () => {
     <div>
       <h1>Update/Add Meals</h1>
       <form onSubmit={handleSubmit}>
-        <select name="day" value={newMeal.day} onChange={handleInputChange}>
+        <select name="day" value={newMeal.day} onChange={handleInputChange} required>
           <option value="">Select Day</option>
           <option value="Sunday">Sunday</option>
           <option value="Monday">Monday</option>
@@ -47,13 +47,13 @@ const UpdateMeals = () => {
           <option value="Friday">Friday</option>
           <option value="Saturday">Saturday</option>
         </select>
-        <select name="mealType" value={newMeal.mealType} onChange={handleInputChange}>
+        <select name="mealType" value={newMeal.mealType} onChange={handleInputChange} required>
           <option value="">Select Meal Type</option>
           <option value="Breakfast">Breakfast</option>
           <option value="Lunch">Lunch</option>
           <option value="Supper">Supper</option>
         </select>
-        <input type="text" name="name" placeholder="Meal Name" value={newMeal.name} onChange={handleInputChange} />
+        <input type="text" name="name" placeholder="Meal Name" value={newMeal.name} onChange={handleInputChange} required />
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Add/Update Meal</button>
       </form>
