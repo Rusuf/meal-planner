@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MealTable from './MealTable';
+import NavBar from './NavBar';
 
 const Home = () => {
   const [meals, setMeals] = useState(null);
@@ -17,6 +18,7 @@ const Home = () => {
 
   return (
     <div>
+      <NavBar />
       <MealTable meals={meals} />
     </div>
   );

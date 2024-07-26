@@ -1,4 +1,5 @@
 import React from 'react';
+import './FullScreenMealTable.css'; // Ensure this path is correct
 
 const FullScreenMealTable = ({ meals }) => {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

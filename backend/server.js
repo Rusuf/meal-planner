@@ -1,20 +1,35 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-const upload = multer({ dest: 'public/uploads/' });
+const port = 5000;
 
+// Enable CORS
 app.use(cors());
-app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-if (!fs.existsSync('public/uploads')) {
-  fs.mkdirSync('public/uploads');
+// Ensure uploads directory exists
+const uploadDir = 'uploads';
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir);
 }
+
+// Storage configuration for multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 let meals = {
   Sunday: { Breakfast: {}, Lunch: {}, Supper: {} },
@@ -23,45 +38,28 @@ let meals = {
   Wednesday: { Breakfast: {}, Lunch: {}, Supper: {} },
   Thursday: { Breakfast: {}, Lunch: {}, Supper: {} },
   Friday: { Breakfast: {}, Lunch: {}, Supper: {} },
-  Saturday: { Breakfast: {}, Lunch: {}, Supper: {} }
+  Saturday: { Breakfast: {}, Lunch: {}, Supper: {} },
 };
 
+// Endpoint to get all meals
 app.get('/api/meals', (req, res) => {
   res.json(meals);
 });
 
+// Endpoint to update or add a meal
 app.post('/api/meals', upload.single('picture'), (req, res) => {
-  const { day, mealType, name } = req.body;
+  const { day, type, name } = req.body;
+  const picture = req.file ? `/uploads/${req.file.filename}` : null;
 
-  if (req.file) {
-    const picturePath = `/uploads/${req.file.filename}`;
-    if (meals[day] && meals[day][mealType] !== undefined) {
-      meals[day][mealType] = { name, picture: picturePath };
-      res.json({ message: 'Meal updated', picture: picturePath });
-    } else {
-      res.status(400).json({ message: 'Invalid day or meal type' });
-    }
+  if (meals[day] && meals[day][type]) {
+    meals[day][type] = { name, picture };
+    res.status(200).json({ message: 'Meal updated successfully!' });
   } else {
-    res.status(400).json({ message: 'No file uploaded' });
+    res.status(400).json({ message: 'Invalid day or meal type.' });
   }
 });
 
-app.delete('/api/meals', (req, res) => {
-  const { day, mealType } = req.body;
-
-  if (meals[day] && meals[day][mealType] !== undefined) {
-    const picturePath = meals[day][mealType].picture;
-    if (picturePath) {
-      const fullPath = path.join(__dirname, 'public', picturePath);
-      fs.unlink(fullPath, (err) => {
-        if (err) console.error('Error deleting file:', err);
-      });
-    }
-    meals[day][mealType] = {}; 
-    res.json({ message: 'Meal deleted' });
-  } else {
-    res.status(400).json({ message: 'Invalid day or meal type' });
-  }
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
-
-app.listen(5000, () => console.log('Server running on port 5000'));
