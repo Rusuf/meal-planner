@@ -1,58 +1,65 @@
-import React, { useEffect, useState } from 'react';
+// src/components/MealTable.js
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './MealTable.css';
+import './MealTable.css'; // Import the CSS file for styling
 
-const MealTable = () => {
-  const [meals, setMeals] = useState({
-    Sunday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Monday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Tuesday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Wednesday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Thursday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Friday: { Breakfast: {}, Lunch: {}, Supper: {} },
-    Saturday: { Breakfast: {}, Lunch: {}, Supper: {} },
-  });
+function MealTable() {
+    const [meals, setMeals] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/meals');
-        const mealsData = response.data.reduce((acc, meal) => {
-          if (!acc[meal.day]) {
-            acc[meal.day] = { Breakfast: {}, Lunch: {}, Supper: {} };
-          }
-          acc[meal.day][meal.type] = meal;
-          return acc;
-        }, {});
-        setMeals(mealsData);
-      } catch (error) {
-        console.error('Error fetching meals:', error);
-      }
-    };
+    useEffect(() => {
+        async function fetchMeals() {
+            try {
+                const response = await axios.get('/api/meals');
+                setMeals(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching meals:', error);
+                setLoading(false);
+            }
+        }
 
-    fetchMeals();
-  }, []);
+        fetchMeals();
+    }, []);
 
-  return (
-    <div className="meal-table">
-      {Object.keys(meals).map((day) => (
-        <div key={day} className="meal-day">
-          <h3>{day}</h3>
-          {['Breakfast', 'Lunch', 'Supper'].map((type) => (
-            <div key={type} className="meal-type">
-              <h4>{type}</h4>
-              <div className="meal">
-                {meals[day][type].picture && (
-                  <img src={`http://localhost:5000${meals[day][type].picture}`} alt={meals[day][type].name} />
-                )}
-                <p>{meals[day][type].name}</p>
-              </div>
-            </div>
-          ))}
+    if (loading) {
+        return <div>Loading meals...</div>;
+    }
+
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const mealTypes = ['breakfast', 'lunch', 'supper'];
+
+    return (
+        <div className="meal-table">
+            {days.map((day) => (
+                <div key={day} className="day-container">
+                    <h2>{day}</h2>
+                    {mealTypes.map((type) => (
+                        <div key={type} className="meal-type">
+                            <h3>{type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+                            <div className="meal-items">
+                                {meals
+                                    .filter((meal) => meal.day === day && meal.type === type)
+                                    .map((meal) => (
+                                        <div key={meal.id} className="meal-item">
+                                            {meal.image && (
+                                                <img
+                                                    src={`data:image/jpeg;base64,${meal.image}`}
+                                                    alt={meal.name}
+                                                    className="meal-image"
+                                                />
+                                            )}
+                                            <div className="meal-name">{meal.name}</div>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ))}
         </div>
-      ))}
-    </div>
-  );
-};
+    );
+}
 
 export default MealTable;

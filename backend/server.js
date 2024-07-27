@@ -1,60 +1,38 @@
 const express = require('express');
 const multer = require('multer');
-const pool = require('./db');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
-app.use(express.json());
+// Configure Multer
+const upload = multer({ dest: 'uploads/' });
+
+// Serve static files from the 'uploads' folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = 'uploads/';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+// Middleware to parse JSON
+app.use(express.json());
+
+// Route to handle meal uploads
+app.post('/api/meals', upload.single('image'), (req, res) => {
+    console.log(req.body); // Log form fields
+    console.log(req.file); // Log uploaded file
+
+    const { name } = req.body;
+    const image = req.file;
+
+    if (!name || !image) {
+        return res.status(400).send('Missing name or image');
     }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+
+    // Process the meal data (e.g., save to database or file system)
+    // For simplicity, we'll just send a success response
+
+    res.status(200).send('Meal added successfully');
 });
 
-const upload = multer({ storage });
-
-// Add or update a meal
-app.post('/api/meals', upload.single('picture'), async (req, res) => {
-  const { day, type, name } = req.body;
-  const picture = req.file ? `/uploads/${req.file.filename}` : null;
-
-  try {
-    const result = await pool.query(
-      'INSERT INTO meals (day, type, name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
-      [day, type, name, picture]
-    );
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Get all meals
-app.get('/api/meals', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM meals');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Start server
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

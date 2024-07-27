@@ -1,43 +1,46 @@
-import React, { useState, useEffect } from 'react';
+// src/RandomMeal.js
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const RandomMeal = () => {
-  const [meals, setMeals] = useState([]);
-  const [randomMeal, setRandomMeal] = useState(null);
+    const [meal, setMeal] = useState(null);
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/meals');
-        const mealArray = Object.values(response.data).flatMap(day => Object.values(day));
-        setMeals(mealArray);
-      } catch (error) {
-        console.error('Error fetching meals:', error);
-      }
+    const fetchRandomMeal = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/meals');
+            const meals = response.data;
+            if (meals.length > 0) {
+                const randomIndex = Math.floor(Math.random() * meals.length);
+                setMeal(meals[randomIndex]);
+            }
+        } catch (error) {
+            console.error('Error fetching meals:', error);
+        }
     };
 
-    fetchMeals();
-  }, []);
+    useEffect(() => {
+        fetchRandomMeal();
+    }, []);
 
-  const randomizeMeal = () => {
-    if (meals.length > 0) {
-      const randomIndex = Math.floor(Math.random() * meals.length);
-      setRandomMeal(meals[randomIndex]);
-    }
-  };
-
-  return (
-    <div className="random-meal-container">
-      <h2>Random Meal</h2>
-      <button onClick={randomizeMeal}>Randomize Meal</button>
-      {randomMeal && (
-        <div className="random-meal">
-          <h3>{randomMeal.name}</h3>
-          {randomMeal.picture && <img src={`http://localhost:5000${randomMeal.picture}`} alt={randomMeal.name} />}
+    return (
+        <div>
+            <h2>Random Meal</h2>
+            {meal ? (
+                <div>
+                    <h3>{meal.name}</h3>
+                    <img
+                        src={`data:image/jpeg;base64,${meal.image}`}
+                        alt={meal.name}
+                        style={{ width: '300px', height: '300px', borderRadius: '50%' }}
+                    />
+                    <p>Day: {meal.day}</p>
+                    <p>Type: {meal.type}</p>
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default RandomMeal;
