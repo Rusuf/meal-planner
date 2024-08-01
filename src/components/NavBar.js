@@ -11,13 +11,16 @@ const NavBar = () => {
             <Link to="/">Cuisines</Link>
           </li>
           <li>
-            <Link to="/update">SNACK</Link>
+            <Link to="/add-meal">New Meal</Link>
           </li>
           <li>
-            <Link to="/about"></Link>
+            <Link to="/">Snack</Link>
           </li>
           <li>
-            <Link to="./RandomMeal">Quick Meal</Link>
+            <Link to="/random-meal">Meals Roullete</Link>
+          </li>
+          <li>
+            <Link to="/">Groceries</Link>
           </li>
         </ul>
       </div>
