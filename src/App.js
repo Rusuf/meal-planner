@@ -1,32 +1,47 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import NavBar from './components/NavBar'; // Ensure this path is correct
 import AddMeal from './components/AddMeal';
 import RandomMeal from './components/RandomMeal';
 import Home from './components/Home';
+import MealTable from './components/MealTable';
+import './App.css'; // Ensure this path is correct
 
 const App = () => {
+    const location = useLocation();
+
+    const getBackgroundClass = () => {
+        switch (location.pathname) {
+            case '/':
+                return 'home-background';
+            case '/add-meal':
+                return 'add-meal-background';
+            case '/random-meal':
+                return 'random-meal-background';
+            case '/meal-table':
+                return 'meal-table-background';
+            default:
+                return '';
+        }
+    };
+
     return (
-        <Router>
-            <div>
-                <header className="header">
-                    <nav className="navbar">
-                        <div className="navbar-brand"></div>
-                        <div className="navbar-links">
-                            <Link to="/">Home</Link>
-                            <Link to="/add-meal"></Link>
-                            <Link to="/random-meal"></Link>
-                        </div>
-                    </nav>
-                </header>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/add-meal" element={<AddMeal />} />
-                    <Route path="/random-meal" element={<RandomMeal />} />
-                </Routes>
-            </div>
-        </Router>
+        <div className={getBackgroundClass()}>
+            <NavBar />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/add-meal" element={<AddMeal />} />
+                <Route path="/random-meal" element={<RandomMeal />} />
+                <Route path="/meal-table" element={<MealTable />} />
+            </Routes>
+        </div>
     );
 };
 
-export default App;
+const AppWithRouter = () => (
+    <Router>
+        <App />
+    </Router>
+);
 
+export default AppWithRouter;

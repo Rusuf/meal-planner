@@ -1,42 +1,106 @@
 /* src/components/MealTable.css */
 
 .meal-table {
+  /* Add some basic styling to the meal table */
+  padding: 20px;
+  border: 1px solid #020000dd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.day-direction-controls {
+  /* Style the day direction controls */
+  margin-bottom: 20px;
+}
+
+.day-direction-controls button {
+  /* Style the day direction control buttons */
+  margin-right: 10px;
+}
+
+.day-containers {
+  /* Style the day containers */
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+}
+
+.day-containers.row {
+  /* Style the day containers when in row direction */
+  flex-direction: row;
+}
+
+.day-containers.column {
+  /* Style the day containers when in column direction */
+  flex-direction: column;
 }
 
 .day-container {
-  flex: 1 1 30%;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.meal-type {
-  margin-bottom: 1rem;
-}
-
-.meal-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.meal-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.meal-image {
-  width: 50px;
+  /* Add some basic styling to the day container */
+  margin: 10px;
+  padding: 10px;
+  background-color: #000;
+  border-radius: 10px;
+  width: 100px;
   height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.meal-name {
+.day-container h2 {
+  /* Style the day header */
+  cursor: pointer;
+  user-select: none;
+  color: goldenrod;
+  font-size: 16px;
+}
+
+.day-container h2:hover {
+  /* Add a hover effect to the day header */
+  background-color: #575757;
+}
+.meal-table-container {
+  /* Add some basic styling to the container */
+  padding: 06px;
+  background-color: transparent;
+  border: 1px transparent;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.day-containers {
+  /* Use flexbox to center the days */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.day-containers.row {
+  /* If the direction is row, make the days horizontal */
+  flex-direction: row;
+}
+
+.day-containers.column {
+  /* If the direction is column, make the days vertical */
+  flex-direction: column;
+}
+
+.day-container {
+  /* Add some basic styling to each day container */
+  margin: 10px;
+  padding: 10px;
+  background-color: #333;
+  border: 1px transparent;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.day-container h2 {
+  /* Style the day headings */
+  margin: 0;
+  padding: 10px;
+  font-size: 18px;
   font-weight: bold;
+  color: goldenrod;
+  cursor: pointer;
 }

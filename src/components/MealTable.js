@@ -7,6 +7,8 @@ import './MealTable.css'; // Import the CSS file for styling
 function MealTable() {
     const [meals, setMeals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [collapsedDays, setCollapsedDays] = useState({});
+    const [dayDirection, setDayDirection] = useState('row'); // Add a state to track the direction of the days
 
     useEffect(() => {
         async function fetchMeals() {
@@ -28,36 +30,30 @@ function MealTable() {
     }
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const mealTypes = ['breakfast', 'lunch', 'supper'];
+
+    const handleDayClick = (day) => {
+        setCollapsedDays((prevCollapsedDays) => ({
+           ...prevCollapsedDays,
+            [day]:!prevCollapsedDays[day],
+        }));
+    };
+
+    const handleDirectionChange = (direction) => {
+        setDayDirection(direction);
+    };
 
     return (
-        <div className="meal-table">
-            {days.map((day) => (
-                <div key={day} className="day-container">
-                    <h2>{day}</h2>
-                    {mealTypes.map((type) => (
-                        <div key={type} className="meal-type">
-                            <h3>{type.charAt(0).toUpperCase() + type.slice(1)}</h3>
-                            <div className="meal-items">
-                                {meals
-                                    .filter((meal) => meal.day === day && meal.type === type)
-                                    .map((meal) => (
-                                        <div key={meal.id} className="meal-item">
-                                            {meal.image && (
-                                                <img
-                                                    src={`data:image/jpeg;base64,${meal.image}`}
-                                                    alt={meal.name}
-                                                    className="meal-image"
-                                                />
-                                            )}
-                                            <div className="meal-name">{meal.name}</div>
-                                        </div>
-                                    ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ))}
+        <div className="meal-table-container">
+            <div className={`day-containers ${dayDirection}`}>
+                {days.map((day) => (
+                    <div key={day} className="day-container">
+                        <h2 onClick={() => handleDayClick(day)} style={{ color: 'goldenrod' }}>
+                            {day}
+                            {collapsedDays[day]? '' : ''}
+                        </h2>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

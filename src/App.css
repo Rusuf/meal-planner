@@ -30,3 +30,55 @@
 .navbar-links a:hover {
   text-decoration: underline;
 }
+/* App.css */
+.home-background {
+  background-image: url('./components/images/backg3.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.add-meal-background {
+  background-image: url('./components/images/backg2.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.random-meal-background {
+  background-image: url('./components/images/backg2.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.meal-table-background {
+  background-image: url('./components/images/backg1.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.home-background {
+  background-image: url('./components/images/backg3.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.add-meal-background {
+  background-image: url('./components/images/backg2.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.random-meal-background {
+  background-image: url('./components/images/backg1.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.meal-table-background {
+  background-image: url('./components/images/backg1.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+}
+

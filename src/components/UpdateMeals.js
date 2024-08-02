@@ -40,10 +40,12 @@ const UpdateMeals = () => {
       if (response.ok) {
         alert('Meal updated successfully!');
       } else {
-        alert('Failed to update meal.');
+        const errorText = await response.text();
+        alert('Failed to update meal: ' + errorText);
       }
     } catch (error) {
       console.error('Error updating meal:', error);
+      alert('Error updating meal. Please try again.');
     }
   };
 
@@ -78,11 +80,12 @@ const UpdateMeals = () => {
             name="name"
             value={mealData.name}
             onChange={handleChange}
+            required
           />
         </label>
         <label>
           Meal Picture:
-          <input type="file" name="picture" onChange={handleFileChange} />
+          <input type="file" name="picture" onChange={handleFileChange} required />
         </label>
         <button type="submit">Submit</button>
       </form>
